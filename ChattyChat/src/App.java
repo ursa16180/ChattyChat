@@ -15,6 +15,7 @@ public class App {
 		//preberi("Urša16180");
 		//poslji("Urša16180", "A kdo ve kaj delamo?");
 		//izpisiMe("Urša16180");
+		//a gitHub dela?;
 	        try {
 	            String hello = Request.Get("http://chitchat.andrej.com")
 	                                  .execute()
