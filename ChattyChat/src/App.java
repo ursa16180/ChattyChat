@@ -1,18 +1,22 @@
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class App {
 
 	public static void main(String[] args) {
 		//vrniVpisane();
 		//vpisiMe("Urša16180");
-		//preberi("Urša16180");
+		//System.out.println(preberi("Urša16180"));
 		//poslji("Urša16180", "A kdo ve kaj delamo?");
 		//izpisiMe("Urša16180");
 	        try {
@@ -66,7 +70,7 @@ public class App {
 			e.printStackTrace();
 		}}
 		
-	public static void preberi(String mojeIme){
+	public static List<Sporocilo> preberi(String mojeIme){
 			try {
 				URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 				          .addParameter("username", mojeIme)
@@ -76,11 +80,16 @@ public class App {
                           .execute()
                           .returnContent()
                           .asString();
-				  System.out.println(responseBody);
+				  //return(responseBody);
+				  
+			ObjectMapper mapper = new ObjectMapper();
+			List<Sporocilo> seznamSporocil = mapper.readValue(responseBody, new TypeReference<List<Sporocilo>>(){});
+			return seznamSporocil;	  
 				  
 			} catch (URISyntaxException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return new List<Sporocilo>;
 				}
 			}
 	public static void poslji(String mojeIme, String sporocilo){

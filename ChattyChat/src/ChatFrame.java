@@ -28,7 +28,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JTextField poljeVzdevek;
 	private JButton gumbPrijava;
 	private JButton gumbOdjava;
-	private String jaz;
+	public String jaz;
+	private Robotek robot;
 
 	public ChatFrame() {
 		super();
@@ -38,13 +39,15 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 		JPanel zgornjeOkno = new JPanel();
 		JLabel vnesiVzdevek = new JLabel("Vzdevek:");
-		this.jaz = new String(System.getProperty("user.name"));
-		this.poljeVzdevek = new JTextField(System.getProperty("user.name"), 15);
+		jaz = new String(System.getProperty("user.name"));
+		poljeVzdevek = new JTextField(System.getProperty("user.name"), 15);
+		//jaz = poljeVzdevek.getText()
 		this.gumbPrijava = new JButton("Prijava");
 		this.gumbPrijava.addActionListener(this);
 		
 		this.gumbOdjava = new JButton("Odjava");
 		this.gumbOdjava.addActionListener(this);
+		this.robot = new Robotek(this);
 		
 		FlowLayout lajoutmenedzer = new FlowLayout(FlowLayout.LEFT);
 		zgornjeOkno.setLayout(lajoutmenedzer);
@@ -99,11 +102,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource()==this.gumbPrijava){
-			this.jaz = poljeVzdevek.getText();
-			App.vpisiMe(this.jaz);
+			jaz = poljeVzdevek.getText();
+			App.vpisiMe(jaz);
+			robot.aktiviraj();
 		}
 		if (e.getSource()==this.gumbOdjava){
-			App.izpisiMe(this.jaz);
+			App.izpisiMe(jaz);
+			robot.deaktiviraj();
 		}
 	}
 
