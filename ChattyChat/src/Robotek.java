@@ -1,16 +1,17 @@
-
-
-
-//Ta robot nam bo preverjal, Ëe je kaj novih sporoËil na streûniku.
-//To mora sporoËit chatframu? ali Chit chat?
-
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.http.client.ClientProtocolException;
+
 
 public class Robotek extends TimerTask {
-private ChatFrame chat;
-private Timer timer;
+	private ChatFrame chat;
+	private Timer timer;
+	private List<Sporocilo> novaSporocila;
+	private List<Uporabnik> uporabniki;
 
 
 
@@ -20,7 +21,7 @@ public Robotek(ChatFrame chat) {
 }
 
 /**
- * Activate the robot!
+ * Aktiviraj robotka:
  */
 public void aktiviraj() {
 	timer = new Timer();
@@ -33,15 +34,37 @@ public void deaktiviraj() {
 
 @Override
 public void run() {
-	String novaSporocila = App.preberi(chat.jaz);
-	prikazi_sporocila(novaSporocila);
+	try {
+		novaSporocila = App.preberi(chat.jaz);
+		uporabniki = App.vrniVpisane();
+		chat.prikaziUporabnike(uporabniki);
+		//uporabniki = App.vrniVpisane();
+		prikazi_sporocila(novaSporocila);
+		//prikazi_uporabnike(uporabniki);
+	} catch (ClientProtocolException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (URISyntaxException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
 	
 }
 
-private void prikazi_sporocila(String novaSporocila) {
-	// TODO Auto-generated method stub
+private void prikazi_sporocila(List<Sporocilo> novaSporocila) {
+	//Iz seznama dobi posamezna sporocila
+	for (Sporocilo posamezno : novaSporocila) {
+		String posiljatelj = posamezno.getSender();
+		String besedilo = posamezno.getText();	
+		
+		chat.addMessage(posiljatelj, besedilo); //Po≈°lje sporoƒçilo
+		
+	}
 	
 }
-
 
 }
