@@ -8,15 +8,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -27,96 +26,113 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class ChatFrame extends JFrame implements ActionListener, KeyListener, MouseListener {
-	
-	/**
-	 * 
-	 */
+public class ChatFrame extends JFrame implements ActionListener, KeyListener {
+
 	private static final long serialVersionUID = 1L;
-	private JTextArea output;
-	private JTextField input;
+	private JTextArea output; // Izpisana sporočila
+	private JTextField input; // Za vnos novih sporočil
 	private JTextField poljeVzdevek;
 	private JButton gumbPrijava;
 	private JButton gumbOdjava;
-	private Box.Filler filer;
-	public JPanel uporabnikiOkno;
-	public String jaz;
-	private Robotek robot;
+	private JButton gumbPoslji;
+
+	// private Box.RigidArea filer; // Prostor med gumbi
+	public JPanel uporabnikiOkno; // Izpisuje uporabnike
+	public String jaz; // Moj vzdevek
+	public Robotek robot;
 
 	public ChatFrame() {
 		super();
 		setTitle("Chatty chat");
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
-		
-		JPanel zgornjeOkno = new JPanel();
-		JLabel vnesiVzdevek = new JLabel("Vzdevek:");
-		jaz = new String(System.getProperty("user.name"));
-		poljeVzdevek = new JTextField(System.getProperty("user.name"), 15);
-		//jaz = poljeVzdevek.getText()
-		this.gumbPrijava = new JButton("Prijava");
-		this.gumbPrijava.addActionListener(this);
-		
-		this.gumbOdjava = new JButton("Odjava");
-		this.gumbOdjava.addActionListener(this);
 		this.robot = new Robotek(this);
-		
-		//Zgornja vrstica za prijavo in odjavo
+
+		// Zgornje okno za vpis vzdevka, prijavo in odjavo
+		JPanel zgornjeOkno = new JPanel();
 		FlowLayout lajoutmenedzer = new FlowLayout(FlowLayout.LEFT);
 		zgornjeOkno.setLayout(lajoutmenedzer);
+		GridBagConstraints zgornjeOknoConstraint = new GridBagConstraints();
+		zgornjeOknoConstraint.gridx = 0;
+		zgornjeOknoConstraint.gridy = 0;
+		zgornjeOknoConstraint.gridwidth = 2;
+		zgornjeOknoConstraint.fill = GridBagConstraints.BOTH;
+		pane.add(zgornjeOkno, zgornjeOknoConstraint);
+
+		// Elementi zgornjega okna
+		JLabel vnesiVzdevek = new JLabel("Vzdevek:");
+		// jaz = new String(System.getProperty("user.name"));
+		poljeVzdevek = new JTextField(System.getProperty("user.name"), 15);
+		// jaz = poljeVzdevek.getText()
+		this.gumbPrijava = new JButton("Prijava");
+		this.gumbPrijava.addActionListener(this);
+		this.gumbOdjava = new JButton("Odjava");
+		this.gumbOdjava.addActionListener(this);
 		zgornjeOkno.add(vnesiVzdevek);
 		zgornjeOkno.add(poljeVzdevek);
 		zgornjeOkno.add(gumbPrijava);
 		zgornjeOkno.add(gumbOdjava);
-		GridBagConstraints zgornjeOknoConstraint = new GridBagConstraints();
-		zgornjeOknoConstraint.gridx = 0;
-		zgornjeOknoConstraint.gridy = 0;
-		zgornjeOknoConstraint.fill = GridBagConstraints.HORIZONTAL;
-		pane.add(zgornjeOkno, zgornjeOknoConstraint);
-		
-		//Seznam prijavljenih uporabnikov
+
+		// Seznam prijavljenih uporabnikov
 		this.uporabnikiOkno = new JPanel();
 		this.uporabnikiOkno.setBackground(Color.blue);
+		// this.uporabnikiOkno.setPrefferedSize(new Dimesnion))
 		JLabel trenutnoPrijavljeni = new JLabel("Trenutno prijavljeni:");
-		this.uporabnikiOkno.setLayout(new BoxLayout(this.uporabnikiOkno, BoxLayout.Y_AXIS));
 		this.uporabnikiOkno.add(trenutnoPrijavljeni);
-		//Filer da niso uporabniki preblizu
-		Dimension minSize = new Dimension(20, 5);
-		Dimension prefSize = new Dimension(30, 10);
-		Dimension maxSize = new Dimension(40, 15);
-		this.filer= new Box.Filler(minSize, prefSize, maxSize);
-		
-		GridBagConstraints uporabnikiOknoConstraint = new GridBagConstraints();
-		uporabnikiOknoConstraint.gridx = 1;
-		uporabnikiOknoConstraint.gridy = 1;
-		uporabnikiOknoConstraint.fill = GridBagConstraints.BOTH;
-		pane.add(uporabnikiOkno, uporabnikiOknoConstraint);
+		this.uporabnikiOkno.setLayout(new BoxLayout(this.uporabnikiOkno, BoxLayout.Y_AXIS)); // Izpisuje uporabnike
+																								// navpično
+		/*
+		 * GridBagConstraints uporabnikiOknoConstraint = new GridBagConstraints();
+		 * uporabnikiOknoConstraint.gridx = 1; uporabnikiOknoConstraint.gridy = 1;
+		 * uporabnikiOknoConstraint.fill = GridBagConstraints.BOTH;
+		 * pane.add(uporabnikiOkno, uporabnikiOknoConstraint);
+		 */
+		JScrollPane drsnikUporabniki = new JScrollPane(uporabnikiOkno);
+		GridBagConstraints drsnikUporabnikiConstraint = new GridBagConstraints();
+		drsnikUporabnikiConstraint.gridx = 1;
+		drsnikUporabnikiConstraint.gridy = 1;
+		drsnikUporabnikiConstraint.fill = GridBagConstraints.BOTH;
+		drsnikUporabnikiConstraint.weightx = 1;
+		drsnikUporabnikiConstraint.weighty = 1;
+		pane.add(drsnikUporabniki, drsnikUporabnikiConstraint);
 
-		
-		
+		// Prostor za izpisovanje sporočil
 		this.output = new JTextArea(20, 40);
 		this.output.setEditable(false);
+
+		JScrollPane drsnik = new JScrollPane(output);
 		GridBagConstraints drsnikConstraint = new GridBagConstraints();
 		drsnikConstraint.gridx = 0;
 		drsnikConstraint.gridy = 1;
 		drsnikConstraint.fill = GridBagConstraints.BOTH;
-		drsnikConstraint.weightx = 1;
+		drsnikConstraint.weightx = 5;
 		drsnikConstraint.weighty = 1;
-		JScrollPane drsnik = new JScrollPane(output);
 		pane.add(drsnik, drsnikConstraint);
-		
+		// this.output.setMinimumSize(new Dimension(100,100));//TODO
+
 		this.input = new JTextField(40);
 		GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.gridx = 0;
 		inputConstraint.gridy = 2;
-		inputConstraint.fill=GridBagConstraints.VERTICAL;
+		inputConstraint.weightx = 5;
+		inputConstraint.weighty = 0;
+		
+		inputConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
-		
-		addWindowListener(new WindowAdapter(){
-			public void windowOpened(WindowEvent e){
+
+		this.gumbPoslji = new JButton("Pošlji");
+		GridBagConstraints posljiConstraint = new GridBagConstraints();
+		posljiConstraint.gridx = 1;
+		posljiConstraint.gridy = 2;
+		pane.add(gumbPoslji, posljiConstraint);
+		gumbPoslji.addActionListener(this);
+
+		addWindowListener(new WindowAdapter() {
+			public void windowOpened(WindowEvent e) {
 				input.requestFocusInWindow();
 			}
+
 			@Override
 			public void windowClosed(WindowEvent e) {
 				robot.deaktiviraj();
@@ -129,8 +145,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener, Mo
 		String chat = this.output.getText();
 		this.output.setText(chat + person + ": " + message + "\n");
 	}
-	
-	public void prikaziUporabnike(List<Uporabnik> uporabniki) { //Naredi gumbe uporabnikov
+
+	public void prikaziUporabnike(List<Uporabnik> uporabniki) { // Naredi gumbe uporabnikov
 		List<String> seznamUporabnikov = new ArrayList<String>();
 		for (Uporabnik uporabnik : uporabniki) {
 			String imeUporabnika = uporabnik.getUsername();
@@ -140,13 +156,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener, Mo
 		uporabnikiOkno.removeAll();
 		JLabel trenutnoPrijavljeni = new JLabel("Trenutno prijavljeni:");
 		uporabnikiOkno.add(trenutnoPrijavljeni);
-		
+
 		for (String uporabnik : seznamUporabnikov) {
 			JButton gumbUporabnik = new JButton(uporabnik);
 			gumbUporabnik.setOpaque(false);
 			gumbUporabnik.setContentAreaFilled(false);
+			gumbUporabnik.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
 			gumbUporabnik.setBorderPainted(false);
-			uporabnikiOkno.add(filer);
 			uporabnikiOkno.add(gumbUporabnik);
 			gumbUporabnik.addActionListener(new ActionListener() {
 				@Override
@@ -155,34 +171,39 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener, Mo
 				}
 			});
 
-//			JLabel labelUporabnik = new JLabel(uporabnik);
-//			uporabnikiOkno.add(filer);
-//			uporabnikiOkno.add(labelUporabnik);
-//			labelUporabnik.addMouseListener(this);
-//			labelUporabnik.addMouseListener(new MouseAdapter() {
-//				@Override
-//				public void mouseClicked(MouseEvent dogodek) {
-//					if (dogodek.getClickCount() == 2) {
-//						System.out.println("bu");
-//						//TODO Odpri, fokusiraj okno
-//					}
-//				}
-//			});
-			
-		}	
-		
+			// JLabel labelUporabnik = new JLabel(uporabnik);
+			// uporabnikiOkno.add(filer);
+			// uporabnikiOkno.add(labelUporabnik);
+			// labelUporabnik.addMouseListener(this);
+			// labelUporabnik.addMouseListener(new MouseAdapter() {
+			// @Override
+			// public void mouseClicked(MouseEvent dogodek) {
+			// if (dogodek.getClickCount() == 2) {
+			// System.out.println("bu");
+			// //TODO Odpri, fokusiraj okno
+			// }
+			// }
+			// });
+
+		}
+
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource()==this.gumbPrijava){
+		if (e.getSource() == this.gumbPrijava) {
 			jaz = poljeVzdevek.getText();
 			App.vpisiMe(jaz);
 			robot.aktiviraj();
 		}
-		if (e.getSource()==this.gumbOdjava){
+		if (e.getSource() == this.gumbOdjava) {
 			App.izpisiMe(jaz);
 			robot.deaktiviraj();
+		}
+		if (e.getSource() == this.gumbPoslji) {
+			App.poslji(jaz, this.input.getText());
+			this.addMessage(jaz, this.input.getText());
+			this.input.setText("");
 		}
 	}
 
@@ -194,53 +215,19 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener, Mo
 				this.addMessage(jaz, this.input.getText());
 				this.input.setText("");
 			}
-		}		
+		}
 	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
-	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		if (e.getClickCount() == 2) {
-			System.out.println("bu");
-		}
-		// TODO Auto-generated method stub
-		
 	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 }

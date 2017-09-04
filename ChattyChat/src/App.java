@@ -56,8 +56,8 @@ public class App {
 			String responseBody = Request.Post(uri).execute().returnContent().asString();
 			System.out.println(responseBody);
 		} catch (URISyntaxException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Oseba s tem vzdevkom je že vpisana.");
+			//e.printStackTrace();
 		}
 		
 	}
