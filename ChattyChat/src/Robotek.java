@@ -90,8 +90,8 @@ public class Robotek extends TimerTask {
 			String posiljatelj = posamezno.getSender();
 			String besedilo = posamezno.getText();
 			if (javno) {
-				chat.addMessage(posiljatelj, besedilo);}
-			{
+				chat.addMessage(posiljatelj, besedilo);
+				}{
 				if (chat.slovarZasebni.containsKey(posiljatelj)) {
 					chat.slovarZasebni.get(posiljatelj).addMessage(posiljatelj, besedilo);
 					chat.slovarZasebni.get(posiljatelj).toFront();

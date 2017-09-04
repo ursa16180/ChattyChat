@@ -166,6 +166,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			gumbUporabnik.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
+					if (e.getSource() == gumbUporabnik) {
 					if (slovarZasebni.containsKey(uporabnik)) {
 						slovarZasebni.get(uporabnik).requestFocus();
 						// slovarZasebni.get(uporabnik).toFront();
@@ -177,7 +178,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						pogovor.pack();
 						pogovor.setVisible(true);
 						slovarZasebni.put(uporabnik, pogovor);
-					}
+					}}
 				}
 			});
 
