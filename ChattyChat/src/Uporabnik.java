@@ -6,9 +6,11 @@ public class Uporabnik {
 	private String username;
 	@JsonProperty("last_active")
 	private Date last_active;
-	public Uporabnik() {}; //potreben prazen konstruktor
-	
-	public Uporabnik (String ime, Date aktivnost) {
+
+	public Uporabnik() {
+	}; // potreben prazen konstruktor
+
+	public Uporabnik(String ime, Date aktivnost) {
 		this.setUsername(ime);
 		this.setLast_active(aktivnost);
 	}
@@ -18,7 +20,6 @@ public class Uporabnik {
 
 	}
 
-	
 	public String getUsername() {
 		return username;
 	}
@@ -27,7 +28,6 @@ public class Uporabnik {
 		this.username = username;
 	}
 
-	
 	public Date getLast_active() {
 		return last_active;
 	}

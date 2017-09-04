@@ -13,7 +13,9 @@ import java.awt.event.WindowEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -35,11 +37,11 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JButton gumbPrijava;
 	private JButton gumbOdjava;
 	private JButton gumbPoslji;
-
-	// private Box.RigidArea filer; // Prostor med gumbi
 	public JPanel uporabnikiOkno; // Izpisuje uporabnike
 	public String jaz; // Moj vzdevek
+	public Map<String, ZasebniPogovor> slovarZasebni; // Slovar odprtih zasebnih pogovorov
 	public Robotek robot;
+	
 
 	public ChatFrame() {
 		super();
@@ -47,6 +49,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
 		this.robot = new Robotek(this);
+		this.slovarZasebni = new HashMap<String, ZasebniPogovor>();
 
 		// Zgornje okno za vpis vzdevka, prijavo in odjavo
 		JPanel zgornjeOkno = new JPanel();
@@ -116,7 +119,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		inputConstraint.gridy = 2;
 		inputConstraint.weightx = 5;
 		inputConstraint.weighty = 0;
-		
+
 		inputConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
@@ -134,9 +137,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			}
 
 			@Override
-			public void windowClosed(WindowEvent e) {
-				robot.deaktiviraj();
-				App.izpisiMe(jaz);
+			public void windowClosing(WindowEvent e) {
+				robot.deaktiviraj();// TODO če aktiven!!!
+				App.izpisiMe(jaz);// TODO če vpisana!!!
 			}
 		});
 	}
@@ -146,17 +149,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.output.setText(chat + person + ": " + message + "\n");
 	}
 
-	public void prikaziUporabnike(List<Uporabnik> uporabniki) { // Naredi gumbe uporabnikov
-		List<String> seznamUporabnikov = new ArrayList<String>();
-		for (Uporabnik uporabnik : uporabniki) {
-			String imeUporabnika = uporabnik.getUsername();
-			seznamUporabnikov.add(imeUporabnika);
-		}
-		Collections.sort(seznamUporabnikov);
+	public void prikaziUporabnike(List<String> seznamUporabnikov) { // Naredi gumbe uporabnikov
 		uporabnikiOkno.removeAll();
 		JLabel trenutnoPrijavljeni = new JLabel("Trenutno prijavljeni:");
 		uporabnikiOkno.add(trenutnoPrijavljeni);
+		
 
+		Collections.sort(seznamUporabnikov); //Uredi po abecedi
 		for (String uporabnik : seznamUporabnikov) {
 			JButton gumbUporabnik = new JButton(uporabnik);
 			gumbUporabnik.setOpaque(false);
@@ -167,7 +166,18 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			gumbUporabnik.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					System.out.println("bu");
+					if (slovarZasebni.containsKey(uporabnik)) {
+						slovarZasebni.get(uporabnik).requestFocus();
+						// slovarZasebni.get(uporabnik).toFront();
+						// slovarZasebni.get(uporabnik).repaint(); //A to res rabmo? //TODO
+
+					}
+					{
+						ZasebniPogovor pogovor = new ZasebniPogovor(uporabnik, jaz);
+						pogovor.pack();
+						pogovor.setVisible(true);
+						slovarZasebni.put(uporabnik, pogovor);
+					}
 				}
 			});
 

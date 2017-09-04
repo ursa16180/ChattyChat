@@ -13,12 +13,13 @@ public class Sporocilo {
 	private String text;
 	@JsonProperty("sent_at")
 	private Date sent_at;
-	
-	public Sporocilo() {};
-	
-	//PREJETA
-	public Sporocilo(Boolean javno, String prejemnik, String posiljatelj, 
-			String besedilo, Date cas) {
+
+	public Sporocilo() {
+	};
+
+	// PREJETA
+	//// Prejeta javna
+	public Sporocilo(Boolean javno, String prejemnik, String posiljatelj, String besedilo, Date cas) {
 		this.setGlobal(javno);
 		this.setRecipient(prejemnik);
 		this.setSender(posiljatelj);
@@ -27,11 +28,11 @@ public class Sporocilo {
 	}
 
 	public static void main(String[] args) {
-		
+
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public Boolean getGlobal() {
 		return global;
 	}
@@ -40,7 +41,6 @@ public class Sporocilo {
 		this.global = global;
 	}
 
-	
 	public String getRecipient() {
 		return recipient;
 	}
