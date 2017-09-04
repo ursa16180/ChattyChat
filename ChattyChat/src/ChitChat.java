@@ -1,7 +1,8 @@
 public class ChitChat {
 
+	public static ChatFrame chatFrame = new ChatFrame();
+
 	public static void main(String[] args) {
-		ChatFrame chatFrame = new ChatFrame();
 		chatFrame.pack();
 		chatFrame.setVisible(true);
 	}

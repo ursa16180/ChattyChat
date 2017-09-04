@@ -106,6 +106,7 @@ public class App {
 
 			String responseBody = Request.Post(uri).bodyString(message, ContentType.APPLICATION_JSON).execute()
 					.returnContent().asString();
+			//System.out.println("A pride sm?");
 
 			System.out.println(responseBody);
 		} catch (URISyntaxException | IOException e) {

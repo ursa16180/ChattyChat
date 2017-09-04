@@ -36,10 +36,10 @@ public class Robotek extends TimerTask {
 			novaSporocila = App.preberi(chat.jaz);
 			prikazi_sporocila(novaSporocila);
 			uporabniki = App.vrniVpisane();
-			List<String>seznam = toList(uporabniki);
+			List<String> seznam = toList(uporabniki);
 			sporociNedosegljive(seznam);
-			//pretvori v seznam in v zasebnih pogovorih pove da se je izpisal
-			chat.prikaziUporabnike(seznam);//prikaze uporabnike v chatu
+			// pretvori v seznam in v zasebnih pogovorih pove da se je izpisal
+			chat.prikaziUporabnike(seznam);// prikaze uporabnike v chatu
 
 			// uporabniki = App.vrniVpisane();
 			// prikazi_uporabnike(uporabniki);
@@ -58,20 +58,19 @@ public class Robotek extends TimerTask {
 	private void sporociNedosegljive(List<String> seznamDosegljivih) {
 		Set<String> mnozicaZasebnih = chat.slovarZasebni.keySet();
 		for (String posameznik : mnozicaZasebnih) {
-			if(seznamDosegljivih.contains(posameznik) && !chat.slovarZasebni.get(posameznik).getAktiven()) {
-				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba "+posameznik+" je dosegljiva.");
+			if (seznamDosegljivih.contains(posameznik) && !chat.slovarZasebni.get(posameznik).getAktiven()) {
+				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba " + posameznik + " je dosegljiva.");
 				chat.slovarZasebni.get(posameznik).setAktiven(true);
 				chat.slovarZasebni.get(posameznik).setEnabled(true);
 			}
 			if (!seznamDosegljivih.contains(posameznik) && chat.slovarZasebni.get(posameznik).getAktiven()) {
-				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba "+posameznik+" je nedosegljiva.");
+				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba " + posameznik + " je nedosegljiva.");
 				chat.slovarZasebni.get(posameznik).setAktiven(false);
 				chat.slovarZasebni.get(posameznik).setEnabled(false);
 			}
-				
-			
+
 		}
-		
+
 	}
 
 	private List<String> toList(List<Uporabnik> uporabniki) {
@@ -91,19 +90,25 @@ public class Robotek extends TimerTask {
 			String besedilo = posamezno.getText();
 			if (javno) {
 				chat.addMessage(posiljatelj, besedilo);
-				}{
+				System.out.println(javno);
+			} else {
+				System.out.println("Global je False");// TODO nikol ne doseže tega elsa in ne izpisuje zasebnih
 				if (chat.slovarZasebni.containsKey(posiljatelj)) {
 					chat.slovarZasebni.get(posiljatelj).addMessage(posiljatelj, besedilo);
 					chat.slovarZasebni.get(posiljatelj).toFront();
-					
-				}{
+					System.out.println(javno);
+					System.out.println("else-if");
+
+				} else {
 					ZasebniPogovor pogovor = new ZasebniPogovor(posiljatelj, chat.jaz);
 					pogovor.pack();
 					pogovor.setVisible(true);
 					chat.slovarZasebni.put(posiljatelj, pogovor);
 					pogovor.addMessage(posiljatelj, besedilo);
+					System.out.println(javno);
+					System.out.println("else-else");
 				}
-				
+
 			}
 		}
 

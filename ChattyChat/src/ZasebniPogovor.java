@@ -30,7 +30,6 @@ public class ZasebniPogovor extends JFrame implements KeyListener, ActionListene
 		this.aktiven = true; //ko se pogovor ustvari je aktiven
 		setTitle(dopisovalec);
 		Container pane = this.getContentPane();
-		
 		pane.setLayout(new GridBagLayout());
 		
 		//Prostor za izpisana sporočila
@@ -67,6 +66,10 @@ public class ZasebniPogovor extends JFrame implements KeyListener, ActionListene
 		addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
 				input.requestFocusInWindow();
+			}
+			public void windowClosing(WindowEvent e) {
+				ChitChat.chatFrame.slovarZasebni.remove(dopisovalec);
+				//Zbriši iz slovarja
 			}
 		});
 	}

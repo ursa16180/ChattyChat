@@ -140,6 +140,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			public void windowClosing(WindowEvent e) {
 				robot.deaktiviraj();// TODO če aktiven!!!
 				App.izpisiMe(jaz);// TODO če vpisana!!!
+				for (Map.Entry<String, ZasebniPogovor> element : slovarZasebni.entrySet()) {
+					element.getValue().dispose();
+				}
 			}
 		});
 	}
@@ -153,7 +156,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		uporabnikiOkno.removeAll();
 		JLabel trenutnoPrijavljeni = new JLabel("Trenutno prijavljeni:");
 		uporabnikiOkno.add(trenutnoPrijavljeni);
-		
 
 		Collections.sort(seznamUporabnikov); //Uredi po abecedi
 		for (String uporabnik : seznamUporabnikov) {
@@ -161,26 +163,28 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			gumbUporabnik.setOpaque(false);
 			gumbUporabnik.setContentAreaFilled(false);
 			gumbUporabnik.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
-			gumbUporabnik.setBorderPainted(false);
+			//gumbUporabnik.setBorderPainted(false);
 			uporabnikiOkno.add(gumbUporabnik);
 			gumbUporabnik.addActionListener(new ActionListener() {
-				@Override
+				//@Override
 				public void actionPerformed(ActionEvent e) {
-					if (e.getSource() == gumbUporabnik) {
+					//if (e.getSource() == gumbUporabnik) {
 					if (slovarZasebni.containsKey(uporabnik)) {
 						slovarZasebni.get(uporabnik).requestFocus();
 						// slovarZasebni.get(uporabnik).toFront();
 						// slovarZasebni.get(uporabnik).repaint(); //A to res rabmo? //TODO
 
-					}
+					} else
 					{
 						ZasebniPogovor pogovor = new ZasebniPogovor(uporabnik, jaz);
 						pogovor.pack();
 						pogovor.setVisible(true);
 						slovarZasebni.put(uporabnik, pogovor);
 					}}
-				}
+				//}
 			});
+			uporabnikiOkno.revalidate(); // to invoke the layout manager
+			uporabnikiOkno.repaint();
 
 			// JLabel labelUporabnik = new JLabel(uporabnik);
 			// uporabnikiOkno.add(filer);
