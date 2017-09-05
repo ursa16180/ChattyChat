@@ -51,16 +51,18 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		setTitle("Chatty chat");
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
+		// pane.setBackground(barvaAktivna);
 
 		this.slovarZasebni = new HashMap<String, ZasebniPogovor>();
 		this.setMojStatus(false);
-		this.barvaAktivna=new Color(82,153,188); //Turkizna
-		this.barvaNeaktivna=new Color(220,220,220); //Svetlo siva
-		
-				
+		this.barvaNeaktivna = new Color(220, 220, 220); // Svetlo siva
+		Color barvaOkna = new Color(82, 153, 188); // Turkizna
+		this.barvaAktivna = new Color(162,207,229);
+		pane.setBackground(barvaOkna);
 
 		// Zgornje okno za vpis vzdevka, prijavo in odjavo
 		JPanel zgornjeOkno = new JPanel();
+		zgornjeOkno.setBackground(barvaOkna);
 		FlowLayout lajoutmenedzer = new FlowLayout(FlowLayout.LEFT);
 		zgornjeOkno.setLayout(lajoutmenedzer);
 		GridBagConstraints zgornjeOknoConstraint = new GridBagConstraints();
@@ -86,8 +88,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 		// Seznam prijavljenih uporabnikov
 		this.uporabnikiOkno = new JPanel();
-		this.uporabnikiOkno.setBackground(new Color(255,153,51));
-		// this.uporabnikiOkno.setPrefferedSize(new Dimesnion))
+		this.uporabnikiOkno.setBackground(new Color(242,179,86)); //Oranžno ozadje
+		this.uporabnikiOkno.setPreferredSize(new Dimension(140, 100));
 		JLabel trenutnoDosegljivi = new JLabel("Trenutno dosegljivi:");
 		this.uporabnikiOkno.add(trenutnoDosegljivi);
 		this.uporabnikiOkno.setLayout(new BoxLayout(this.uporabnikiOkno, BoxLayout.Y_AXIS)); // Izpisuje uporabnike
@@ -140,8 +142,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		posljiConstraint.gridy = 2;
 		pane.add(gumbPoslji, posljiConstraint);
 		gumbPoslji.addActionListener(this);
-		
-		//Na začetku je vse deaktivirano, dokler se uporabnik ne prijavi
+
+		// Na začetku je vse deaktivirano, dokler se uporabnik ne prijavi
 		gumbOdjava.setEnabled(false);
 		gumbPrijava.setEnabled(true);
 		input.setEnabled(false);
@@ -154,9 +156,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if(mojStatus) {
-				robot.deaktiviraj();
-				App.izpisiMe(jaz);
+				if (mojStatus) {
+					robot.deaktiviraj();
+					App.izpisiMe(jaz);
 				}
 				for (Map.Entry<String, ZasebniPogovor> element : slovarZasebni.entrySet()) {
 					element.getValue().dispose();
@@ -182,7 +184,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		uporabnikiOkno.removeAll();
 		JLabel trenutnoDosegljivi = new JLabel("Trenutno dosegljivi:");
 		uporabnikiOkno.add(trenutnoDosegljivi);
-		
+
 		seznamUporabnikov.remove(jaz);
 		Collections.sort(seznamUporabnikov); // Uredi po abecedi
 		for (String uporabnik : seznamUporabnikov) {
