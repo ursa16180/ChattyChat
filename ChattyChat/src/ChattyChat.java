@@ -1,4 +1,4 @@
-public class ChitChat {
+public class ChattyChat {
 
 	public static ChatFrame chatFrame = new ChatFrame();
 

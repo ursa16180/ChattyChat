@@ -74,7 +74,7 @@ public class ZasebniPogovor extends JFrame implements KeyListener, ActionListene
 			}
 
 			public void windowClosing(WindowEvent e) {
-				ChitChat.chatFrame.slovarZasebni.remove(dopisovalec);
+				ChattyChat.chatFrame.slovarZasebni.remove(dopisovalec);
 				// Zbriši iz slovarja
 			}
 		});

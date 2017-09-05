@@ -33,7 +33,7 @@ public class Robotek extends TimerTask {
 	@Override
 	public void run() {
 		try {
-			novaSporocila = App.preberi(chat.jaz);
+			novaSporocila = App.sprejemSporocil(chat.jaz);
 			prikazi_sporocila(novaSporocila);
 			uporabniki = App.vrniVpisane();
 			List<String> seznam = toList(uporabniki);

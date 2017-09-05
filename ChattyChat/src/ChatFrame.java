@@ -39,7 +39,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JButton gumbOdjava;
 	private JButton gumbPoslji;
 	private Boolean mojStatus;
-	public JPanel uporabnikiOkno; // Izpisuje uporabnike
+	public JPanel uporabnikiOkno; // Prikaže gumbe dosegljivih uporabnikov
 	public String jaz; // Moj vzdevek
 	public Map<String, ZasebniPogovor> slovarZasebni; // Slovar odprtih zasebnih pogovorov
 	public Robotek robot;
@@ -51,14 +51,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		setTitle("Chatty chat");
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
-		// pane.setBackground(barvaAktivna);
 
 		this.slovarZasebni = new HashMap<String, ZasebniPogovor>();
 		this.setMojStatus(false);
 		this.barvaNeaktivna = new Color(220, 220, 220); // Svetlo siva
-		Color barvaOkna = new Color(82, 153, 188); // Turkizna
-		this.barvaAktivna = new Color(162,207,229);
-		pane.setBackground(barvaOkna);
+		Color barvaOkna = new Color(82, 153, 188); // Modra
+		this.barvaAktivna = new Color(162, 207, 229); // Svetlo modra
+		pane.setBackground(barvaOkna); // Določi barvo okna
 
 		// Zgornje okno za vpis vzdevka, prijavo in odjavo
 		JPanel zgornjeOkno = new JPanel();
@@ -68,15 +67,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		GridBagConstraints zgornjeOknoConstraint = new GridBagConstraints();
 		zgornjeOknoConstraint.gridx = 0;
 		zgornjeOknoConstraint.gridy = 0;
-		zgornjeOknoConstraint.gridwidth = 2;
+		zgornjeOknoConstraint.gridwidth = 2; // Razteza se čez 2 stolpca
 		zgornjeOknoConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(zgornjeOkno, zgornjeOknoConstraint);
 
 		// Elementi zgornjega okna
 		JLabel vnesiVzdevek = new JLabel("Vzdevek:");
-		// jaz = new String(System.getProperty("user.name"));
 		poljeVzdevek = new JTextField(System.getProperty("user.name"), 15);
-		// jaz = poljeVzdevek.getText()
 		this.gumbPrijava = new JButton("Prijava");
 		this.gumbPrijava.addActionListener(this);
 		this.gumbOdjava = new JButton("Odjava");
@@ -88,7 +85,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 		// Seznam prijavljenih uporabnikov
 		this.uporabnikiOkno = new JPanel();
-		this.uporabnikiOkno.setBackground(new Color(242,179,86)); //Oranžno ozadje
+		this.uporabnikiOkno.setBackground(new Color(242, 179, 86)); // Oranžno ozadje
 		this.uporabnikiOkno.setPreferredSize(new Dimension(140, 100));
 		JLabel trenutnoDosegljivi = new JLabel("Trenutno dosegljivi:");
 		this.uporabnikiOkno.add(trenutnoDosegljivi);
@@ -237,15 +234,17 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.gumbPrijava) {
 			jaz = poljeVzdevek.getText();
+			poljeVzdevek.setEditable(false);
 			App.vpisiMe(jaz);
 			aktivirajPogovore();
 		}
 		if (e.getSource() == this.gumbOdjava) {
 			App.izpisiMe(jaz);
+			poljeVzdevek.setEditable(true);
 			deaktivirajPogovore();
 		}
 		if (e.getSource() == this.gumbPoslji) {
-			App.poslji(jaz, this.input.getText());
+			App.posljiJavno(jaz, this.input.getText());
 			this.addMessage(jaz, this.input.getText());
 			this.input.setText("");
 		}
@@ -284,7 +283,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
-				App.poslji(jaz, this.input.getText());
+				App.posljiJavno(jaz, this.input.getText());
 				this.addMessage(jaz, this.input.getText());
 				this.input.setText("");
 			}
