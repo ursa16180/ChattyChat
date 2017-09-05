@@ -49,6 +49,7 @@ public class App {
 			URI uri = new URIBuilder("http://chitchat.andrej.com/users").addParameter("username", mojeIme).build();
 			String responseBody = Request.Post(uri).execute().returnContent().asString();
 			System.out.println(responseBody);
+			ChitChat.chatFrame.setMojStatus(true);
 		} catch (URISyntaxException | IOException e) {
 			System.out.println("Oseba s tem vzdevkom je že vpisana.");
 			e.printStackTrace();
@@ -62,6 +63,7 @@ public class App {
 
 			String responseBody = Request.Delete(uri).execute().returnContent().asString();
 			System.out.println(responseBody);
+			ChitChat.chatFrame.setMojStatus(false);
 
 		} catch (URISyntaxException | IOException e) {
 			// TODO Auto-generated catch block
@@ -79,6 +81,7 @@ public class App {
 		mapper.setDateFormat(new ISO8601DateFormat()); // Vsi časi na serverju v takem formatu
 		List<Sporocilo> seznamSporocil = mapper.readValue(responseBody, new TypeReference<List<Sporocilo>>() {
 		});
+		//System.out.println(seznamSporocil.size());
 		return seznamSporocil;
 
 	}
@@ -101,7 +104,7 @@ public class App {
 	public static void posljiZasebno(String jaz, String dopisovalec, String text) {
 		try {
 			URI uri = new URIBuilder("http://chitchat.andrej.com/messages").addParameter("username", jaz).build();
-			String message = "{ \"global\" : false, \"recipient\" : \" " + dopisovalec + "\", \"text\" : \" " + text
+			String message = "{ \"global\" : false, \"recipient\" : \"" + dopisovalec + "\", \"text\" : \" " + text
 					+ "\"  }";
 
 			String responseBody = Request.Post(uri).bodyString(message, ContentType.APPLICATION_JSON).execute()

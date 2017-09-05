@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -37,19 +38,26 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JButton gumbPrijava;
 	private JButton gumbOdjava;
 	private JButton gumbPoslji;
+	private Boolean mojStatus;
 	public JPanel uporabnikiOkno; // Izpisuje uporabnike
 	public String jaz; // Moj vzdevek
 	public Map<String, ZasebniPogovor> slovarZasebni; // Slovar odprtih zasebnih pogovorov
 	public Robotek robot;
-	
+	private Color barvaAktivna;
+	private Color barvaNeaktivna;
 
 	public ChatFrame() {
 		super();
 		setTitle("Chatty chat");
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
-		this.robot = new Robotek(this);
+
 		this.slovarZasebni = new HashMap<String, ZasebniPogovor>();
+		this.setMojStatus(false);
+		this.barvaAktivna=new Color(82,153,188); //Turkizna
+		this.barvaNeaktivna=new Color(220,220,220); //Svetlo siva
+		
+				
 
 		// Zgornje okno za vpis vzdevka, prijavo in odjavo
 		JPanel zgornjeOkno = new JPanel();
@@ -78,10 +86,10 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 		// Seznam prijavljenih uporabnikov
 		this.uporabnikiOkno = new JPanel();
-		this.uporabnikiOkno.setBackground(Color.blue);
+		this.uporabnikiOkno.setBackground(new Color(255,153,51));
 		// this.uporabnikiOkno.setPrefferedSize(new Dimesnion))
-		JLabel trenutnoPrijavljeni = new JLabel("Trenutno prijavljeni:");
-		this.uporabnikiOkno.add(trenutnoPrijavljeni);
+		JLabel trenutnoDosegljivi = new JLabel("Trenutno dosegljivi:");
+		this.uporabnikiOkno.add(trenutnoDosegljivi);
 		this.uporabnikiOkno.setLayout(new BoxLayout(this.uporabnikiOkno, BoxLayout.Y_AXIS)); // Izpisuje uporabnike
 																								// navpično
 		/*
@@ -102,6 +110,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		// Prostor za izpisovanje sporočil
 		this.output = new JTextArea(20, 40);
 		this.output.setEditable(false);
+		this.output.setLineWrap(true);
+		this.output.setWrapStyleWord(true);
+		this.output.setBackground(barvaNeaktivna);
 
 		JScrollPane drsnik = new JScrollPane(output);
 		GridBagConstraints drsnikConstraint = new GridBagConstraints();
@@ -119,7 +130,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		inputConstraint.gridy = 2;
 		inputConstraint.weightx = 5;
 		inputConstraint.weighty = 0;
-
 		inputConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
@@ -130,6 +140,12 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		posljiConstraint.gridy = 2;
 		pane.add(gumbPoslji, posljiConstraint);
 		gumbPoslji.addActionListener(this);
+		
+		//Na začetku je vse deaktivirano, dokler se uporabnik ne prijavi
+		gumbOdjava.setEnabled(false);
+		gumbPrijava.setEnabled(true);
+		input.setEnabled(false);
+		gumbPoslji.setEnabled(false);
 
 		addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
@@ -138,13 +154,23 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				robot.deaktiviraj();// TODO če aktiven!!!
-				App.izpisiMe(jaz);// TODO če vpisana!!!
+				if(mojStatus) {
+				robot.deaktiviraj();
+				App.izpisiMe(jaz);
+				}
 				for (Map.Entry<String, ZasebniPogovor> element : slovarZasebni.entrySet()) {
 					element.getValue().dispose();
 				}
 			}
 		});
+	}
+
+	public Boolean getMojStatus() {
+		return mojStatus;
+	}
+
+	public void setMojStatus(Boolean mojStatus) {
+		this.mojStatus = mojStatus;
 	}
 
 	public void addMessage(String person, String message) {
@@ -154,34 +180,35 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 	public void prikaziUporabnike(List<String> seznamUporabnikov) { // Naredi gumbe uporabnikov
 		uporabnikiOkno.removeAll();
-		JLabel trenutnoPrijavljeni = new JLabel("Trenutno prijavljeni:");
-		uporabnikiOkno.add(trenutnoPrijavljeni);
-
-		Collections.sort(seznamUporabnikov); //Uredi po abecedi
+		JLabel trenutnoDosegljivi = new JLabel("Trenutno dosegljivi:");
+		uporabnikiOkno.add(trenutnoDosegljivi);
+		
+		seznamUporabnikov.remove(jaz);
+		Collections.sort(seznamUporabnikov); // Uredi po abecedi
 		for (String uporabnik : seznamUporabnikov) {
 			JButton gumbUporabnik = new JButton(uporabnik);
 			gumbUporabnik.setOpaque(false);
 			gumbUporabnik.setContentAreaFilled(false);
 			gumbUporabnik.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
-			//gumbUporabnik.setBorderPainted(false);
+			gumbUporabnik.setBorderPainted(false);
 			uporabnikiOkno.add(gumbUporabnik);
 			gumbUporabnik.addActionListener(new ActionListener() {
-				//@Override
+				// @Override
 				public void actionPerformed(ActionEvent e) {
-					//if (e.getSource() == gumbUporabnik) {
+					// if (e.getSource() == gumbUporabnik) {
 					if (slovarZasebni.containsKey(uporabnik)) {
 						slovarZasebni.get(uporabnik).requestFocus();
 						// slovarZasebni.get(uporabnik).toFront();
 						// slovarZasebni.get(uporabnik).repaint(); //A to res rabmo? //TODO
 
-					} else
-					{
+					} else {
 						ZasebniPogovor pogovor = new ZasebniPogovor(uporabnik, jaz);
 						pogovor.pack();
 						pogovor.setVisible(true);
 						slovarZasebni.put(uporabnik, pogovor);
-					}}
-				//}
+					}
+				}
+				// }
 			});
 			uporabnikiOkno.revalidate(); // to invoke the layout manager
 			uporabnikiOkno.repaint();
@@ -209,17 +236,46 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		if (e.getSource() == this.gumbPrijava) {
 			jaz = poljeVzdevek.getText();
 			App.vpisiMe(jaz);
-			robot.aktiviraj();
+			aktivirajPogovore();
 		}
 		if (e.getSource() == this.gumbOdjava) {
 			App.izpisiMe(jaz);
-			robot.deaktiviraj();
+			deaktivirajPogovore();
 		}
 		if (e.getSource() == this.gumbPoslji) {
 			App.poslji(jaz, this.input.getText());
 			this.addMessage(jaz, this.input.getText());
 			this.input.setText("");
 		}
+	}
+
+	private void aktivirajPogovore() {
+		this.robot = new Robotek(this); // Potrebno narediti nov timer vsakič ko se vpišeš
+		robot.aktiviraj();
+		gumbOdjava.setEnabled(true);
+		gumbPrijava.setEnabled(false);
+		input.setEnabled(true);
+		gumbPoslji.setEnabled(true);
+		output.setBackground(barvaAktivna);
+		Set<String> mnozicaZasebnih = slovarZasebni.keySet();
+		for (String posameznik : mnozicaZasebnih) {
+			slovarZasebni.get(posameznik).aktivirajPogovor();
+		}
+
+	}
+
+	private void deaktivirajPogovore() {
+		robot.deaktiviraj();
+		gumbOdjava.setEnabled(false);
+		gumbPrijava.setEnabled(true);
+		input.setEnabled(false);
+		gumbPoslji.setEnabled(false);
+		output.setBackground(barvaNeaktivna);
+		Set<String> mnozicaZasebnih = slovarZasebni.keySet();
+		for (String posameznik : mnozicaZasebnih) {
+			slovarZasebni.get(posameznik).deaktivirajPogovor();
+		}
+
 	}
 
 	@Override

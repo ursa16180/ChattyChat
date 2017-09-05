@@ -61,12 +61,12 @@ public class Robotek extends TimerTask {
 			if (seznamDosegljivih.contains(posameznik) && !chat.slovarZasebni.get(posameznik).getAktiven()) {
 				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba " + posameznik + " je dosegljiva.");
 				chat.slovarZasebni.get(posameznik).setAktiven(true);
-				chat.slovarZasebni.get(posameznik).setEnabled(true);
+				chat.slovarZasebni.get(posameznik).aktivirajPogovor();
 			}
 			if (!seznamDosegljivih.contains(posameznik) && chat.slovarZasebni.get(posameznik).getAktiven()) {
 				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba " + posameznik + " je nedosegljiva.");
 				chat.slovarZasebni.get(posameznik).setAktiven(false);
-				chat.slovarZasebni.get(posameznik).setEnabled(false);
+				chat.slovarZasebni.get(posameznik).deaktivirajPogovor();
 			}
 
 		}
@@ -83,6 +83,7 @@ public class Robotek extends TimerTask {
 	}
 
 	private void prikazi_sporocila(List<Sporocilo> novaSporocila) {
+		//System.out.println(novaSporocila.size());
 		// Iz seznama dobi posamezna sporocila
 		for (Sporocilo posamezno : novaSporocila) {
 			Boolean javno = posamezno.getGlobal();
@@ -90,23 +91,16 @@ public class Robotek extends TimerTask {
 			String besedilo = posamezno.getText();
 			if (javno) {
 				chat.addMessage(posiljatelj, besedilo);
-				System.out.println(javno);
 			} else {
-				System.out.println("Global je False");// TODO nikol ne doseže tega elsa in ne izpisuje zasebnih
 				if (chat.slovarZasebni.containsKey(posiljatelj)) {
 					chat.slovarZasebni.get(posiljatelj).addMessage(posiljatelj, besedilo);
 					chat.slovarZasebni.get(posiljatelj).toFront();
-					System.out.println(javno);
-					System.out.println("else-if");
-
 				} else {
 					ZasebniPogovor pogovor = new ZasebniPogovor(posiljatelj, chat.jaz);
 					pogovor.pack();
 					pogovor.setVisible(true);
 					chat.slovarZasebni.put(posiljatelj, pogovor);
 					pogovor.addMessage(posiljatelj, besedilo);
-					System.out.println(javno);
-					System.out.println("else-else");
 				}
 
 			}

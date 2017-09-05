@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,23 +19,26 @@ public class ZasebniPogovor extends JFrame implements KeyListener, ActionListene
 	private static final long serialVersionUID = 1L;
 	public JTextArea output; // Izpisana sporočila
 	public JTextField input; // Prostor za vpis
-	private JButton gumbPoslji;
+	public JButton gumbPoslji;
 	private String jaz;
 	private String dopisovalec;
-	public Boolean aktiven; //Ali je pogovor aktiven ali se je človeč izpisal
+	public Boolean prisotenDopisovalec; // Ali je pogovor aktiven ali se je dopisovalec izpisal
 
 	public ZasebniPogovor(String dopisovalec, String jaz) {
 		super();
 		this.jaz = jaz;
 		this.dopisovalec = dopisovalec;
-		this.aktiven = true; //ko se pogovor ustvari je aktiven
+		this.prisotenDopisovalec = true; // ko se pogovor ustvari je aktiven
 		setTitle(dopisovalec);
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
-		
-		//Prostor za izpisana sporočila
+
+		// Prostor za izpisana sporočila
 		this.output = new JTextArea(20, 40);
 		this.output.setEditable(false);
+		this.output.setLineWrap(true);
+		this.output.setWrapStyleWord(true);
+		this.output.setBackground(new Color(255,239,213)); //Aktivno oranžno ozadje
 
 		JScrollPane drsnik = new JScrollPane(output);
 		GridBagConstraints drsnikConstraint = new GridBagConstraints();
@@ -43,8 +47,9 @@ public class ZasebniPogovor extends JFrame implements KeyListener, ActionListene
 		drsnikConstraint.fill = GridBagConstraints.BOTH;
 		drsnikConstraint.weightx = 1;
 		drsnikConstraint.weighty = 1;
+		drsnikConstraint.gridwidth = 2;
 		pane.add(drsnik, drsnikConstraint);
-		
+
 		this.input = new JTextField(40);
 		GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.gridx = 0;
@@ -67,44 +72,59 @@ public class ZasebniPogovor extends JFrame implements KeyListener, ActionListene
 			public void windowOpened(WindowEvent e) {
 				input.requestFocusInWindow();
 			}
+
 			public void windowClosing(WindowEvent e) {
 				ChitChat.chatFrame.slovarZasebni.remove(dopisovalec);
-				//Zbriši iz slovarja
+				// Zbriši iz slovarja
 			}
 		});
 	}
-	
+
+	public void aktivirajPogovor() {
+		input.setEnabled(true);
+		gumbPoslji.setEnabled(true);
+		output.setBackground(new Color(255,239,213)); // Aktivna oražna barva
+	}
+
+	public void deaktivirajPogovor() {
+		input.setEnabled(false);
+		gumbPoslji.setEnabled(false);
+		output.setBackground(new Color(220,220,220));
+		//TODO barva ozadje
+		
+	}
+
 	public Boolean getAktiven() {
-		return aktiven;
+		return prisotenDopisovalec;
 	}
 
 	public void setAktiven(Boolean aktiven) {
-		this.aktiven = aktiven;
+		this.prisotenDopisovalec = aktiven;
 	}
 
 	public void addMessage(String person, String message) {
 		String chat = this.output.getText();
 		this.output.setText(chat + person + ": " + message + "\n");
 	}
-	
+
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.gumbPoslji) {
-			App.posljiZasebno(jaz, this.dopisovalec, this.input.getText());
+			System.out.println(jaz+dopisovalec+input.getText());
+			App.posljiZasebno(jaz, dopisovalec, this.input.getText());
 			this.addMessage(jaz, this.input.getText());
 			this.input.setText("");
 		}
 	}
-	
+
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
-				App.posljiZasebno(jaz,this.dopisovalec, this.input.getText());
+				App.posljiZasebno(jaz, dopisovalec, this.input.getText());
 				this.addMessage(jaz, this.input.getText());
 				this.input.setText("");
 			}
 		}
 	}
-	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -114,13 +134,13 @@ public class ZasebniPogovor extends JFrame implements KeyListener, ActionListene
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
