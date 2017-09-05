@@ -1,3 +1,3 @@
 # ChattyChat
 
-Aplikacija namenjena za klepet s sošolci.
+Aplikacija za klepet s sošolci.
