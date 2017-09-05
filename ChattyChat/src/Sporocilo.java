@@ -15,22 +15,14 @@ public class Sporocilo {
 	private Date sent_at;
 
 	public Sporocilo() {
-	};
+	}
 
-	// PREJETA
-	//// Prejeta javna
 	public Sporocilo(Boolean javno, String prejemnik, String posiljatelj, String besedilo, Date cas) {
 		this.setGlobal(javno);
 		this.setRecipient(prejemnik);
 		this.setSender(posiljatelj);
 		this.setText(besedilo);
 		this.setSent_at(cas);
-	}
-
-	public static void main(String[] args) {
-
-		// TODO Auto-generated method stub
-
 	}
 
 	public Boolean getGlobal() {

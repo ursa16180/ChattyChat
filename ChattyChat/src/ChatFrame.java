@@ -11,7 +11,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -73,7 +71,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 		// Elementi zgornjega okna
 		JLabel vnesiVzdevek = new JLabel("Vzdevek:");
-		poljeVzdevek = new JTextField(System.getProperty("user.name"), 15);
+		this.poljeVzdevek = new JTextField(System.getProperty("user.name"), 15);
 		this.gumbPrijava = new JButton("Prijava");
 		this.gumbPrijava.addActionListener(this);
 		this.gumbOdjava = new JButton("Odjava");
@@ -83,20 +81,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		zgornjeOkno.add(gumbPrijava);
 		zgornjeOkno.add(gumbOdjava);
 
-		// Seznam prijavljenih uporabnikov
+		// Okno dosegljivih uporabnikov
 		this.uporabnikiOkno = new JPanel();
 		this.uporabnikiOkno.setBackground(new Color(242, 179, 86)); // Oranžno ozadje
-		this.uporabnikiOkno.setPreferredSize(new Dimension(140, 100));
+		this.uporabnikiOkno.setMinimumSize(new Dimension(140, 100));
 		JLabel trenutnoDosegljivi = new JLabel("Trenutno dosegljivi:");
 		this.uporabnikiOkno.add(trenutnoDosegljivi);
 		this.uporabnikiOkno.setLayout(new BoxLayout(this.uporabnikiOkno, BoxLayout.Y_AXIS)); // Izpisuje uporabnike
 																								// navpično
-		/*
-		 * GridBagConstraints uporabnikiOknoConstraint = new GridBagConstraints();
-		 * uporabnikiOknoConstraint.gridx = 1; uporabnikiOknoConstraint.gridy = 1;
-		 * uporabnikiOknoConstraint.fill = GridBagConstraints.BOTH;
-		 * pane.add(uporabnikiOkno, uporabnikiOknoConstraint);
-		 */
 		JScrollPane drsnikUporabniki = new JScrollPane(uporabnikiOkno);
 		GridBagConstraints drsnikUporabnikiConstraint = new GridBagConstraints();
 		drsnikUporabnikiConstraint.gridx = 1;
@@ -107,12 +99,12 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		pane.add(drsnikUporabniki, drsnikUporabnikiConstraint);
 
 		// Prostor za izpisovanje sporočil
-		this.output = new JTextArea(20, 40);
+		this.output = new JTextArea(20, 40); // Število vrstic in stolpcev
+		this.output.setPreferredSize(new Dimension(500, 100));
 		this.output.setEditable(false);
 		this.output.setLineWrap(true);
 		this.output.setWrapStyleWord(true);
 		this.output.setBackground(barvaNeaktivna);
-
 		JScrollPane drsnik = new JScrollPane(output);
 		GridBagConstraints drsnikConstraint = new GridBagConstraints();
 		drsnikConstraint.gridx = 0;
@@ -121,8 +113,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		drsnikConstraint.weightx = 5;
 		drsnikConstraint.weighty = 1;
 		pane.add(drsnik, drsnikConstraint);
-		// this.output.setMinimumSize(new Dimension(100,100));//TODO
 
+		// Prostor za vpisovanje sporočil
 		this.input = new JTextField(40);
 		GridBagConstraints inputConstraint = new GridBagConstraints();
 		inputConstraint.gridx = 0;
@@ -133,6 +125,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
 
+		// Gumb za pošiljanje sporočil
 		this.gumbPoslji = new JButton("Pošlji");
 		GridBagConstraints posljiConstraint = new GridBagConstraints();
 		posljiConstraint.gridx = 1;
@@ -146,6 +139,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		input.setEnabled(false);
 		gumbPoslji.setEnabled(false);
 
+		// Obnašanje okna (fokus in zapiranje)
 		addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
 				input.requestFocusInWindow();
@@ -155,13 +149,18 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			public void windowClosing(WindowEvent e) {
 				if (mojStatus) {
 					robot.deaktiviraj();
-					App.izpisiMe(jaz);
+					KomunikacijaServer.izpisiMe(jaz);
 				}
 				for (Map.Entry<String, ZasebniPogovor> element : slovarZasebni.entrySet()) {
-					element.getValue().dispose();
+					element.getValue().dispose(); // Zapre vse zasebne pogovore
 				}
 			}
 		});
+	}
+
+	public void addMessage(String person, String message) {
+		String chat = this.output.getText();
+		this.output.setText(chat + person + ": " + message + "\n");
 	}
 
 	public Boolean getMojStatus() {
@@ -172,17 +171,11 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.mojStatus = mojStatus;
 	}
 
-	public void addMessage(String person, String message) {
-		String chat = this.output.getText();
-		this.output.setText(chat + person + ": " + message + "\n");
-	}
-
 	public void prikaziUporabnike(List<String> seznamUporabnikov) { // Naredi gumbe uporabnikov
 		uporabnikiOkno.removeAll();
 		JLabel trenutnoDosegljivi = new JLabel("Trenutno dosegljivi:");
 		uporabnikiOkno.add(trenutnoDosegljivi);
 
-		seznamUporabnikov.remove(jaz);
 		Collections.sort(seznamUporabnikov); // Uredi po abecedi
 		for (String uporabnik : seznamUporabnikov) {
 			JButton gumbUporabnik = new JButton(uporabnik);
@@ -192,61 +185,20 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			gumbUporabnik.setBorderPainted(false);
 			uporabnikiOkno.add(gumbUporabnik);
 			gumbUporabnik.addActionListener(new ActionListener() {
-				// @Override
 				public void actionPerformed(ActionEvent e) {
-					// if (e.getSource() == gumbUporabnik) {
 					if (slovarZasebni.containsKey(uporabnik)) {
 						slovarZasebni.get(uporabnik).requestFocus();
-						// slovarZasebni.get(uporabnik).toFront();
-						// slovarZasebni.get(uporabnik).repaint(); //A to res rabmo? //TODO
-
 					} else {
 						ZasebniPogovor pogovor = new ZasebniPogovor(uporabnik, jaz);
 						pogovor.pack();
+						pogovor.setMinimumSize(new Dimension(100, 100));
 						pogovor.setVisible(true);
 						slovarZasebni.put(uporabnik, pogovor);
 					}
 				}
-				// }
 			});
 			uporabnikiOkno.revalidate(); // to invoke the layout manager
 			uporabnikiOkno.repaint();
-
-			// JLabel labelUporabnik = new JLabel(uporabnik);
-			// uporabnikiOkno.add(filer);
-			// uporabnikiOkno.add(labelUporabnik);
-			// labelUporabnik.addMouseListener(this);
-			// labelUporabnik.addMouseListener(new MouseAdapter() {
-			// @Override
-			// public void mouseClicked(MouseEvent dogodek) {
-			// if (dogodek.getClickCount() == 2) {
-			// System.out.println("bu");
-			// //TODO Odpri, fokusiraj okno
-			// }
-			// }
-			// });
-
-		}
-
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == this.gumbPrijava) {
-			jaz = poljeVzdevek.getText();
-			poljeVzdevek.setEditable(false);
-			App.vpisiMe(jaz);
-			aktivirajPogovore();
-		}
-		if (e.getSource() == this.gumbOdjava) {
-			App.izpisiMe(jaz);
-			poljeVzdevek.setEditable(true);
-			deaktivirajPogovore();
-		}
-		if (e.getSource() == this.gumbPoslji) {
-			App.posljiJavno(jaz, this.input.getText());
-			this.addMessage(jaz, this.input.getText());
-			this.input.setText("");
 		}
 	}
 
@@ -262,7 +214,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		for (String posameznik : mnozicaZasebnih) {
 			slovarZasebni.get(posameznik).aktivirajPogovor();
 		}
-
 	}
 
 	private void deaktivirajPogovore() {
@@ -276,14 +227,35 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		for (String posameznik : mnozicaZasebnih) {
 			slovarZasebni.get(posameznik).deaktivirajPogovor();
 		}
+	}
 
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == this.gumbPrijava) {
+			jaz = poljeVzdevek.getText();
+			poljeVzdevek.setEditable(false);
+			KomunikacijaServer.vpisiMe(jaz);
+			aktivirajPogovore();
+		}
+
+		if (e.getSource() == this.gumbOdjava) {
+			KomunikacijaServer.izpisiMe(jaz);
+			poljeVzdevek.setEditable(true);
+			deaktivirajPogovore();
+		}
+
+		if (e.getSource() == this.gumbPoslji) {
+			KomunikacijaServer.posljiJavno(jaz, this.input.getText());
+			this.addMessage(jaz, this.input.getText());
+			this.input.setText("");
+		}
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
-				App.posljiJavno(jaz, this.input.getText());
+				KomunikacijaServer.posljiJavno(jaz, this.input.getText());
 				this.addMessage(jaz, this.input.getText());
 				this.input.setText("");
 			}
@@ -292,14 +264,12 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-
+		// Auto-generated method stub
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-
+		// Auto-generated method stub
 	}
 
 }

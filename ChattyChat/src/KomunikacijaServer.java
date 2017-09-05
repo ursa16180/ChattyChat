@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
-public class App {
+public class KomunikacijaServer {
 
 	public static List<Uporabnik> vrniVpisane() throws ClientProtocolException, IOException {
 		String vpisani = Request.Get("http://chitchat.andrej.com/users").execute().returnContent().asString();
@@ -43,7 +43,7 @@ public class App {
 			System.out.println(responseBody);
 			ChattyChat.chatFrame.setMojStatus(false);
 		} catch (URISyntaxException | IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -68,7 +68,7 @@ public class App {
 					.returnContent().asString();
 			System.out.println(responseBody);
 		} catch (URISyntaxException | IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -82,7 +82,7 @@ public class App {
 					.returnContent().asString();
 			System.out.println(responseBody);
 		} catch (URISyntaxException | IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

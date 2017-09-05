@@ -8,16 +8,11 @@ public class Uporabnik {
 	private Date last_active;
 
 	public Uporabnik() {
-	}; // potreben prazen konstruktor
+	}
 
 	public Uporabnik(String ime, Date aktivnost) {
 		this.setUsername(ime);
 		this.setLast_active(aktivnost);
-	}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 	public String getUsername() {

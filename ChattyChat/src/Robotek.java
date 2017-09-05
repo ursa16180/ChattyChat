@@ -1,7 +1,7 @@
+import java.awt.Dimension;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
@@ -22,10 +22,10 @@ public class Robotek extends TimerTask {
 	// Aktivacija robotka
 	public void aktiviraj() {
 		timer = new Timer();
-		timer.scheduleAtFixedRate(this, 2000, 1000);
+		timer.scheduleAtFixedRate(this, 0, 1000);
 	}
 
-	// Deaktiviraj robotka
+	// Deaktivacija robotka
 	public void deaktiviraj() {
 		timer.cancel();
 	}
@@ -33,24 +33,20 @@ public class Robotek extends TimerTask {
 	@Override
 	public void run() {
 		try {
-			novaSporocila = App.sprejemSporocil(chat.jaz);
+			novaSporocila = KomunikacijaServer.sprejemSporocil(chat.jaz);
 			prikazi_sporocila(novaSporocila);
-			uporabniki = App.vrniVpisane();
-			List<String> seznam = toList(uporabniki);
-			sporociNedosegljive(seznam);
-			// pretvori v seznam in v zasebnih pogovorih pove da se je izpisal
-			chat.prikaziUporabnike(seznam);// prikaze uporabnike v chatu
-
-			// uporabniki = App.vrniVpisane();
-			// prikazi_uporabnike(uporabniki);
+			uporabniki = KomunikacijaServer.vrniVpisane();
+			List<String> seznam = toList(uporabniki); // Da ne pretvarja večkrat in mene odstrani
+			sporociNedosegljive(seznam); // Sporoča v zasebnih pogovorih, če se je dopisovalec (ne)dosegljiv
+			chat.prikaziUporabnike(seznam);// Prikaze uporabnike v chatu
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			// Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -59,32 +55,31 @@ public class Robotek extends TimerTask {
 		Set<String> mnozicaZasebnih = chat.slovarZasebni.keySet();
 		for (String posameznik : mnozicaZasebnih) {
 			if (seznamDosegljivih.contains(posameznik) && !chat.slovarZasebni.get(posameznik).getAktiven()) {
+				// Vpiše se nekdo s katerim imamo odprt neaktiven zasebni pogovor
 				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba " + posameznik + " je dosegljiva.");
 				chat.slovarZasebni.get(posameznik).setAktiven(true);
 				chat.slovarZasebni.get(posameznik).aktivirajPogovor();
 			}
 			if (!seznamDosegljivih.contains(posameznik) && chat.slovarZasebni.get(posameznik).getAktiven()) {
+				// Izpiše se nekdo s katerim imamo odprt aktiven zasebni pogovor
 				chat.slovarZasebni.get(posameznik).addMessage("Sistem", "Oseba " + posameznik + " je nedosegljiva.");
 				chat.slovarZasebni.get(posameznik).setAktiven(false);
 				chat.slovarZasebni.get(posameznik).deaktivirajPogovor();
 			}
-
 		}
-
 	}
 
-	private List<String> toList(List<Uporabnik> uporabniki) {
+	private List<String> toList(List<Uporabnik> uporabniki) { // Pretvori v seznam nizov in odstrani mene
 		List<String> seznamUporabnikov = new ArrayList<String>();
 		for (Uporabnik uporabnik : uporabniki) {
 			String imeUporabnika = uporabnik.getUsername();
-			seznamUporabnikov.add(imeUporabnika);// TODO if stavek da me ne doda na seznam ali da me na koncu izbriše
+			seznamUporabnikov.add(imeUporabnika);
 		}
+		seznamUporabnikov.remove(chat.jaz);
 		return seznamUporabnikov;
 	}
 
 	private void prikazi_sporocila(List<Sporocilo> novaSporocila) {
-		//System.out.println(novaSporocila.size());
-		// Iz seznama dobi posamezna sporocila
 		for (Sporocilo posamezno : novaSporocila) {
 			Boolean javno = posamezno.getGlobal();
 			String posiljatelj = posamezno.getSender();
@@ -97,6 +92,7 @@ public class Robotek extends TimerTask {
 					chat.slovarZasebni.get(posiljatelj).toFront();
 				} else {
 					ZasebniPogovor pogovor = new ZasebniPogovor(posiljatelj, chat.jaz);
+					pogovor.setMinimumSize(new Dimension(100, 100));
 					pogovor.pack();
 					pogovor.setVisible(true);
 					chat.slovarZasebni.put(posiljatelj, pogovor);
